@@ -7,7 +7,7 @@ namespace _15puzzle
     /// </summary>
     class Heuristic
     {
-        public static int H(int[] gameField)
+        public int H(int[] gameField)
         {
             return GetManhattanDistanceCost(gameField) + GetLinearConflictCost(gameField);
         }
@@ -17,7 +17,7 @@ namespace _15puzzle
         /// </summary>
         /// <param name="gameField"></param>
         /// <returns></returns>
-        private static int GetManhattanDistanceCost(int[] gameField)
+        private int GetManhattanDistanceCost(int[] gameField)
         {
             var heuristicCost = 0;
             var size = (int)Math.Sqrt(gameField.Length);
@@ -49,7 +49,7 @@ namespace _15puzzle
         /// </summary>
         /// <param name="gameField"></param>
         /// <returns></returns>
-        private static int GetLinearConflictCost(int[] gameField)
+        private int GetLinearConflictCost(int[] gameField)
         {
             var heuristicCost = 0;
             var size = (int)Math.Sqrt(gameField.Length);

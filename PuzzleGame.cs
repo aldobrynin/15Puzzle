@@ -14,7 +14,7 @@ namespace _15puzzle
     class PuzzleGame
     {
 
-        public const int SpaceValue = 0;
+        public const int SpaceValue = -1;
         
         public int[] GameField;
         public readonly int Size;
@@ -22,7 +22,7 @@ namespace _15puzzle
 
         private readonly Panel _panel;
         public event MouseButtonEventHandler PuzzleClick;
-        
+        internal event PuzzleSolved PuzzleSolved;
         public PuzzleGame(Panel panel, int size)
         {
             _panel = panel;
@@ -33,9 +33,10 @@ namespace _15puzzle
         public void InitNewGame()
         {
             for (int i = 0; i < Size*Size; i++)
-                GameField[i] = i == Size*Size - 1 ? SpaceValue : i + 1;
-            
+                GameField[i] = i + 1;
             SpaceIndex = Size * Size - 1;
+            GameField[SpaceIndex] = SpaceValue;
+            
             Shuffle();
             DrawField();
         }
@@ -50,9 +51,12 @@ namespace _15puzzle
                 for (int i = 0; i < GameField.Length; i++)
                 {
                     var position = random.Next(0, i);
+                    
                     Swap(GameField, i, position);
                     if (GameField[position] == SpaceValue)
                         SpaceIndex = position;
+                    if (GameField[i] == SpaceValue)
+                        SpaceIndex = i;
                 }
             } while (!IsSolvable());
         }
@@ -182,6 +186,8 @@ namespace _15puzzle
             SpaceIndex = newIndex;
             pCell.Row = spaceRow;
             pCell.Column = spaceCol;
+            if (IsFinalState())
+                if (PuzzleSolved != null) PuzzleSolved();
         }
 
         public bool MoveSpaceCell(Direction direction)
@@ -199,6 +205,18 @@ namespace _15puzzle
             Thread.Sleep(300);
             return true;
 
+        }
+
+        private bool IsFinalState()
+        {
+
+            for (int i = Size*Size-1; i >= 0; i--)
+            {
+                var value = GameField[i] == SpaceValue ? Size*Size : GameField[i];
+                if (value - 1 != i)
+                    return false;
+            }
+            return true;
         }
     }
 }

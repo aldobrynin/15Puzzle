@@ -10,12 +10,16 @@ namespace _15puzzle
     class Solver
     {
         private int[] _gameField;
-        private readonly Stack<Direction> _resPath;
         private int _steps;
+        private readonly Stack<Direction> _resPath;
+        private readonly Heuristic _heuristic;
         private readonly Stopwatch _stopWatch;
+        
         internal event PuzzleSolution PuzzleSolved;
-        internal Solver()
+        
+        internal Solver(Heuristic heuristic)
         {
+            _heuristic = heuristic;
             _steps = 0;
             _resPath = new Stack<Direction>();
             _stopWatch = new Stopwatch();
@@ -31,7 +35,7 @@ namespace _15puzzle
         {
            _gameField = nodes;
             StartMeasure();
-            int bound = Heuristic.H(_gameField);
+            int bound = _heuristic.H(_gameField);
             int spaceIndex = -1;
             bool result = false;
             while (!result)
@@ -50,7 +54,7 @@ namespace _15puzzle
 
         private bool IterativeDeepeningASearch(int g, Direction prevDir, int spaceIndex, int currentCostBound)
         {
-            var h = Heuristic.H(_gameField);
+            var h = _heuristic.H(_gameField);
             if (h == 0)
                 return true;
 
