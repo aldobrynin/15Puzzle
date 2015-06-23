@@ -14,7 +14,7 @@ namespace _15puzzle
         private readonly Stack<Direction> _resPath;
         private readonly Heuristic _heuristic;
         private readonly Stopwatch _stopWatch;
-        
+        private int _minPrevIteration;
         internal event PuzzleSolution PuzzleSolved;
         
         internal Solver(Heuristic heuristic)
@@ -40,13 +40,14 @@ namespace _15puzzle
             bool result = false;
             while (!result)
             {
+                _minPrevIteration = int.MaxValue;
                 for (int i = 0; i < _gameField.Length; i++)
                     if (_gameField[i] == PuzzleGame.SpaceValue)
                         spaceIndex = i;
                 _steps = 0;
-                result = IterativeDeepeningASearch(0,Direction.None, spaceIndex,bound);
+                result = IterativeDeepeningASearch(0,Direction.None, spaceIndex, bound);
 
-                bound += 2;
+                bound = _minPrevIteration;
             }
             EndMeasure();
             if (PuzzleSolved != null) PuzzleSolved(_steps, (int)_stopWatch.ElapsedMilliseconds, _resPath);
@@ -60,7 +61,11 @@ namespace _15puzzle
 
             var f = g + h;
             if (f > currentCostBound)
+            {
+                if (_minPrevIteration > f)
+                    _minPrevIteration = f;
                 return false;
+            }
 
             foreach (Direction direction in Enum.GetValues(typeof (Direction)))
             {
