@@ -114,8 +114,8 @@ namespace _15puzzle
                 {
                     while (path.Count > 0)
                     {
-                        _game.MoveSpaceCell(path.Pop());
                         StepsCount++;
+                        _game.MoveSpaceCell(path.Pop());
                     }
                 }    
             }
